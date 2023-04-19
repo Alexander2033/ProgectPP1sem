@@ -1,20 +1,25 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Страница про нас
+Страница регистрации
 {% endblock %}
 
 {% block body %}
 <div class = "container mt-5">
-<h1>Добавление кросовок</h1>
+<h1>Авторизация</h1>
     <form method="post">
-        <h5>Введите имя кроссовок</h5>
-        <input type="text" name="name" id="name" class="form-control"><br>
-        <h5>Введите цену кроссовок</h5>
-         <input type="number" name="price" id="price" class="form-control"><br>
-        <h5>Введите размер кроссовок</h5>
-         <input type="number" name="size" id="size" class="form-control"><br>
-        <input type="submit" class="btn btn-success" value="Отправить"><br>
+        <h5>Введите свой email адрес</h5>
+         <input type="text" name="email" id="email" class="form-control"><br>
+        <h5>Введите свое имя</h5>
+         <input type="text" name="name" id="name" class="form-control"><br>
+        <h5>Введите пароль</h5>
+         <input type="password" name="password" id="password" autocomplete="current-password" class="form-control"><br>
+        <h5>Введите свой номер телефона</h5>
+         <input type="number" name="telephone" id="telephone" class="form-control"><br>
+        <input type="submit" class="btn btn-success" value="Зарегистрироваться"><br>
     </form>
+    <div class="container signin">
+    <p>У вас уже есть аккаунт? <a href="/door">Войти</a>.</p>
+  </div>
 </div>
 {% endblock %}
