@@ -22,8 +22,9 @@ class Items(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    cost_price = Column(Integer)
+    price = Column(Integer)
     quantity = Column(Integer)
+    image = Column(String)
 
 
 class User(Base):
@@ -35,14 +36,15 @@ class User(Base):
     password = Column(String)
     email = Column(String)
 
-class Order(Base):
-    __tablename__ = 'order_lines'
+#class Order(Base):
+#    __tablename__ = 'order_lines'
 
 
-    id = Column(Integer, primary_key=True)
-    order_id = Column(ForeignKey('orders.id'))
-    item_id = Column(ForeignKey('items.id'))
-    quantity = Column(Integer)
+#    id = Column(Integer, primary_key=True)
+ #   order_id = Column(ForeignKey('orders.id'))
+  #  item_id = Column(ForeignKey('items.id'))
+   # quantity = Column(Integer)
+
 
 # Create the table in the database
 Base.metadata.create_all(engine)
@@ -51,6 +53,53 @@ app = Flask(__name__)
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///blr.db'
 #db = SQLAlchemy(app)
 
+@app.route('/delT', methods=['POST', 'GET'])
+def delT():
+    if 'name' not in session:
+        return redirect('/')
+    if session['name'] == "admin":
+        if (request.method == "POST"):
+            namef = request.form['name']
+            session1 = Session()
+            items = session1.query(Items).all()
+            for item in items:
+                if item.name == namef:
+                    session1.delete(item)
+                    session1.commit()
+                    break
+        return render_template('delT.html')
+    else:
+        return redirect('/')
+
+
+@app.route('/addT', methods=['POST', 'GET'])
+def addT():
+    if 'name' not in session:
+        return redirect('/')
+    if session['name'] == "admin":
+        if (request.method == "POST"):
+            namef = request.form['name']
+            pricef = request.form['price']
+            quantityf = request.form['quantity']
+            imagef = request.form['image']
+            if (namef and pricef and quantityf and imagef):
+                item = Items(name=namef, price=pricef, quantity=quantityf, image=imagef)
+
+                # Add the user to the database
+                session1 = Session()
+                session1.add(item)
+                session1.commit()
+                items = session1.query(Items).all()
+
+                # Print the users
+                for item in items:
+                    print(item.name)
+                    print(item.price)
+                    print(item.quantity)
+                    print(item.image)
+        return render_template('addT.html')
+    else:
+        return redirect('/')
 
 
 
@@ -78,7 +127,9 @@ def door():
 
 @app.route('/katalog')
 def katalog():
-    return render_template('Katalog.html')
+    session1 = Session()
+    items = session1.query(Items).all()
+    return render_template('Katalog.html', article=items)
 
 @app.route('/support')
 def support():

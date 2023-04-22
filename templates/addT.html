@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Добавление товара
+{% endblock %}
+
+{% block body %}
+<div class = "container mt-5">
+<h1>Добавить</h1>
+    <form method="post">
+        <h5>Имя</h5>
+         <input type="text" name="name" id="name" class="form-control"><br>
+        <h5>Цена</h5>
+         <input type="number" name="price" id="price" class="form-control"><br>
+        <h5>Количество</h5>
+        <input type="number" name="quantity" id="quantity" class="form-control"><br>
+        <h5>Ссылка на image</h5>
+        <input type="text" name="image" id="image" class="form-control"><br>
+<input type="submit" class="btn btn-success" value="Добавить"><br>
+    </form>
+</div>
+{% endblock %}
