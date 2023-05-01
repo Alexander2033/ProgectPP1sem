@@ -2,3 +2,8 @@ header {
     background-color: black;
 }
 
+.icon-button {
+  background-image: url("../foto/kors.png");
+  background-size: 30px 30px;
+}
+

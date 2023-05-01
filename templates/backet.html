@@ -1,9 +1,46 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Корзина
+Каталог
 {% endblock %}
 
 {% block body %}
-<h1>Корзина</h1>
+  <section class="py-5 text-center container">
+    <div class="row py-lg-5">
+      <div class="col-lg-6 col-md-8 mx-auto">
+        <h1 class="fw-light">Каталог кроссовок</h1>
+        <p class="lead text-body-secondary">Большой выбор мужских кроссовок и ботинок на сайте CrosMarket.
+            Низкие цены на кроссовки и кеды! Новинки уже на сайте CrosMarket!</p>
+        <p>
+          <a href="/backet" class="btn btn-primary my-2">Корзина</a>
+          <a href="creat-article" class="btn btn-secondary my-2">Авторизоваться</a>
+        </p>
+      </div>
+    </div>
+  </section>
+  <div class="album py-5 bg-body-tertiary">
+    <div class="container">
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+        {% for el in article %}
+        <div class="col">
+          <div class="card shadow-sm">
+            <svg class="bd-placeholder-img card-img-top" width="70%" height="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false">
+                <img x="0" y="0" width="300px" height="200px" src={{ el.image }}></svg>
+            <div class="card-body">
+              <p class="card-text">{{ el.name }}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <button onclick="addToCart({{ el.id }})" type="button" class="btn btn-primary">Add to Cart</button>
+                  <button type="submit" class="btn btn-sm btn-outline-secondary">О товаре</button>
+                </div>
+                <small class="text-body-secondary">цена: {{ el.price }} рублей</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+<h1>Каталог кросовок</h1>
 {% endblock %}

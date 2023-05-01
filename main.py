@@ -36,14 +36,13 @@ class User(Base):
     password = Column(String)
     email = Column(String)
 
-#class Order(Base):
-#    __tablename__ = 'order_lines'
+class Order(Base):
+    __tablename__ = 'order_lines'
 
-
-#    id = Column(Integer, primary_key=True)
- #   order_id = Column(ForeignKey('orders.id'))
-  #  item_id = Column(ForeignKey('items.id'))
-   # quantity = Column(Integer)
+    id = Column(Integer, primary_key=True)
+    order_id = Column(Integer, ForeignKey('users.id'))
+    item_id = Column(Integer, ForeignKey('items.id'))
+    quantity = Column(Integer)
 
 
 # Create the table in the database
@@ -125,11 +124,35 @@ def door():
     else:
         return render_template('door.html')
 
-@app.route('/katalog')
+
+
+@app.route('/katalog', methods=['POST', 'GET'])
 def katalog():
     session1 = Session()
     items = session1.query(Items).all()
     return render_template('Katalog.html', article=items)
+
+
+@app.route('/cart/<int:product_id>', methods=['POST'])
+def add_to_cart(product_id):
+    if 'name' in session:
+        session1 = Session()
+        product = session1.query(Items).filter_by(id = product_id).first()
+        user = session1.query(User).filter_by(name = session['name']).first()
+        orders = session1.query(Order).all()
+        for order in orders:
+            if ((order.order_id == user.id) and (order.item_id == product.id)):
+                order.quantity += 1
+                session1.commit()
+                users = session1.query(Order).all()
+                # Print the users
+                return redirect('/katalog')
+        cart_item = Order(item_id=product.id, order_id=user.id, quantity=1)
+        session1.add(cart_item)
+        session1.commit()
+        users = session1.query(Order).all()
+    return redirect('/katalog')
+
 
 @app.route('/support')
 def support():
@@ -138,9 +161,11 @@ def support():
     return render_template('Support.html')
 
 
-@app.route('/backet')
-def backet():
-    return render_template('backet.html')
+@app.route('/backet', methods=['POST', 'GET'])
+def katalog():
+    session1 = Session()
+    orders = session1.query(Order).all()
+    return render_template('backet.html', article=orders)
 
 @app.route('/unsetsession', methods=['POST', 'GET'])
 def unsetsession():
@@ -163,16 +188,18 @@ def creat_article():
         passwordf = request.form['password']
         emailf = request.form['email']
         if (passwordf and emailf and telephonef and namef):
-            user = User(name=namef, telephone=telephonef, email=emailf, password=passwordf)
-
-            # Add the user to the database
             session1 = Session()
+            users = session1.query(User).all()
+            for user1 in users:
+                if ((user1.name == namef) and (user1.password == passwordf)):
+                    return render_template('Error1.html')
+            user = User(name=namef, telephone=telephonef, email=emailf, password=passwordf)
+            # Add the user to the database
             session1.add(user)
             session1.commit()
             session['name'] = namef
             # Query the database for all users
             users = session1.query(User).all()
-
             # Print the users
             for user in users:
                 print(user.name)
