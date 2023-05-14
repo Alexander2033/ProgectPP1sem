@@ -32,9 +32,10 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    telephone = Column(Integer)
+    telephone = Column(String)
     password = Column(String)
     email = Column(String)
+    order_cost = Column(Integer)
 
 class Order(Base):
     __tablename__ = 'order_lines'
@@ -90,12 +91,6 @@ def addT():
                 session1.commit()
                 items = session1.query(Items).all()
 
-                # Print the users
-                for item in items:
-                    print(item.name)
-                    print(item.price)
-                    print(item.quantity)
-                    print(item.image)
         return render_template('addT.html')
     else:
         return redirect('/')
@@ -133,6 +128,54 @@ def katalog():
     return render_template('Katalog.html', article=items)
 
 
+@app.route('/backet', methods=['POST', 'GET'])
+def backet():
+    if 'name' in session:
+        session1 = Session()
+        orders = session1.query(Order).all()
+        items = session1.query(Items).all()
+        users = session1.query(User).all()
+        for user in users:
+            if (user.name == session['name']):
+                for order in orders:
+                    if (order.order_id == user.id):
+                        for item in items:
+                            if (order.item_id == item.id):
+                                user.order_cost += (item.price * order.quantity)
+        return render_template('backet.html', orders=orders, items=items, all_users=users, user=session['name'], allcost=user.order_cost)
+    return render_template('Error2.html')
+
+
+@app.route('/cart3/<int:order_id>', methods=['POST'])
+def order_delete(order_id):
+    if 'name' in session:
+        session1 = Session()
+        order = session1.query(Order).filter_by(id=order_id).first()
+        session1.delete(order)
+        session1.commit()
+    return redirect('/backet')
+
+@app.route('/cart1/<int:order_id>', methods=['POST'])
+def order_plas(order_id):
+    if 'name' in session:
+        session1 = Session()
+        order = session1.query(Order).filter_by(id=order_id).first()
+        order.quantity += 1
+        session1.commit()
+    return redirect('/backet')
+
+@app.route('/cart2/<int:order_id>', methods=['POST'])
+def order_minus(order_id):
+    if 'name' in session:
+        print(1)
+        session1 = Session()
+        order = session1.query(Order).filter_by(id = order_id).first()
+        if order.quantity > 0:
+            order.quantity -= 1
+        session1.commit()
+    return redirect('/backet')
+
+
 @app.route('/cart/<int:product_id>', methods=['POST'])
 def add_to_cart(product_id):
     if 'name' in session:
@@ -141,11 +184,9 @@ def add_to_cart(product_id):
         user = session1.query(User).filter_by(name = session['name']).first()
         orders = session1.query(Order).all()
         for order in orders:
-            if ((order.order_id == user.id) and (order.item_id == product.id)):
+            if ((order.order_id == user.id) and (order.item_id == product.id) and (order.quantity < product.quantity)):
                 order.quantity += 1
                 session1.commit()
-                users = session1.query(Order).all()
-                # Print the users
                 return redirect('/katalog')
         cart_item = Order(item_id=product.id, order_id=user.id, quantity=1)
         session1.add(cart_item)
@@ -161,11 +202,7 @@ def support():
     return render_template('Support.html')
 
 
-@app.route('/backet', methods=['POST', 'GET'])
-def katalog():
-    session1 = Session()
-    orders = session1.query(Order).all()
-    return render_template('backet.html', article=orders)
+
 
 @app.route('/unsetsession', methods=['POST', 'GET'])
 def unsetsession():
@@ -193,7 +230,7 @@ def creat_article():
             for user1 in users:
                 if ((user1.name == namef) and (user1.password == passwordf)):
                     return render_template('Error1.html')
-            user = User(name=namef, telephone=telephonef, email=emailf, password=passwordf)
+            user = User(name=namef, telephone=telephonef, email=emailf, password=passwordf, order_cost=0)
             # Add the user to the database
             session1.add(user)
             session1.commit()

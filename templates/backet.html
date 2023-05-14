@@ -1,46 +1,64 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Каталог
 {% endblock %}
 
 {% block body %}
-  <section class="py-5 text-center container">
-    <div class="row py-lg-5">
-      <div class="col-lg-6 col-md-8 mx-auto">
-        <h1 class="fw-light">Каталог кроссовок</h1>
-        <p class="lead text-body-secondary">Большой выбор мужских кроссовок и ботинок на сайте CrosMarket.
-            Низкие цены на кроссовки и кеды! Новинки уже на сайте CrosMarket!</p>
-        <p>
-          <a href="/backet" class="btn btn-primary my-2">Корзина</a>
-          <a href="creat-article" class="btn btn-secondary my-2">Авторизоваться</a>
-        </p>
-      </div>
-    </div>
-  </section>
-  <div class="album py-5 bg-body-tertiary">
-    <div class="container">
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-        {% for el in article %}
-        <div class="col">
-          <div class="card shadow-sm">
-            <svg class="bd-placeholder-img card-img-top" width="70%" height="100%" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false">
-                <img x="0" y="0" width="300px" height="200px" src={{ el.image }}></svg>
-            <div class="card-body">
-              <p class="card-text">{{ el.name }}</p>
-              <div class="d-flex justify-content-between align-items-center">
-                <div class="btn-group">
-                  <button onclick="addToCart({{ el.id }})" type="button" class="btn btn-primary">Add to Cart</button>
-                  <button type="submit" class="btn btn-sm btn-outline-secondary">О товаре</button>
-                </div>
-                <small class="text-body-secondary">цена: {{ el.price }} рублей</small>
-              </div>
-            </div>
-          </div>
-        </div>
+<script>
+function Plas(orderId) {
+    fetch('http://127.0.0.1:5000/cart1/' + orderId,
+        {method: 'POST'}
+    )
+    location.reload();
+}
+function Minus(orderId) {
+    fetch('http://127.0.0.1:5000/cart2/' + orderId,
+        {method: 'POST'}
+    )
+    location.reload();
+}
+function Delete(orderId) {
+    fetch('http://127.0.0.1:5000/cart3/' + orderId,
+        {method: 'POST'}
+    )
+    location.reload();
+}
+</script>
+ <table>
+      <thead>
+      <meta http-equiv=”refresh” content=”0″>
+        <tr>
+          <th>Фото</th>
+          <th>Наименование товара</th>
+          <th>Цена</th>
+          <th>Количество</th>
+            <th>+1</th>
+            <th>-1</th>
+            <th>Удалить</th>
+        </tr>
+      </thead>
+        {% for us in all_users %}
+        {% if us.name == user %}
+        {% for or in orders %}
+        {% if or.order_id == us.id %}
+        {% for el in items %}
+        {% if or.item_id == el.id %}
+
+      <tbody>
+          <td><img width="300px" height="200px" src={{ el.image }} alt="Кроссовки Adidas UltraBoost 21"></td>
+          <td>{{ el.name }}</td>
+          <td>{{ el.price }} руб </td>
+          <td>{{ or.quantity }} штук</td>
+          <td> <button onclick="Plas({{ or.id }})" type="button"> + </button></td>
+          <td> <button onclick="Minus({{ or.id }})" type="button"> - </button></td>
+          <td> <button onclick="Delete({{ or.id }})" type="button"> Удалить </button></td>
+      </tbody>
+        {% endif %}
         {% endfor %}
-      </div>
-    </div>
-  </div>
-<h1>Каталог кросовок</h1>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+            {% endfor %}
+      </table>
+<h2>{{ allcost }} </h2>
 {% endblock %}
