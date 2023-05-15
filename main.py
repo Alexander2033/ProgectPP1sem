@@ -72,6 +72,11 @@ def delT():
         return redirect('/')
 
 
+
+@app.errorhandler(404)
+def pageNotFind(error):
+    return render_template('index.html')
+
 @app.route('/addT', methods=['POST', 'GET'])
 def addT():
     if 'name' not in session:
@@ -111,9 +116,7 @@ def door():
             if user:
                 if ((user.password == passwordf) and (user.email == emailf)):
                     session['name'] = user.name
-                    print("True")
                 return redirect('/')
-        print("False")
         return render_template('door.html')
 
     else:
@@ -141,6 +144,7 @@ def backet():
                     if (order.order_id == user.id):
                         for item in items:
                             if (order.item_id == item.id):
+                                print(item.price)
                                 user.order_cost += (item.price * order.quantity)
         return render_template('backet.html', orders=orders, items=items, all_users=users, user=session['name'], allcost=user.order_cost)
     return render_template('Error2.html')
@@ -160,14 +164,15 @@ def order_plas(order_id):
     if 'name' in session:
         session1 = Session()
         order = session1.query(Order).filter_by(id=order_id).first()
-        order.quantity += 1
+        product = session1.query(Items).filter_by(id=order.item_id).first()
+        if (order.quantity < product.quantity):
+            order.quantity += 1
         session1.commit()
     return redirect('/backet')
 
 @app.route('/cart2/<int:order_id>', methods=['POST'])
 def order_minus(order_id):
     if 'name' in session:
-        print(1)
         session1 = Session()
         order = session1.query(Order).filter_by(id = order_id).first()
         if order.quantity > 0:
@@ -187,6 +192,8 @@ def add_to_cart(product_id):
             if ((order.order_id == user.id) and (order.item_id == product.id) and (order.quantity < product.quantity)):
                 order.quantity += 1
                 session1.commit()
+                return redirect('/katalog')
+            if (order.quantity == product.quantity):
                 return redirect('/katalog')
         cart_item = Order(item_id=product.id, order_id=user.id, quantity=1)
         session1.add(cart_item)
@@ -237,12 +244,6 @@ def creat_article():
             session['name'] = namef
             # Query the database for all users
             users = session1.query(User).all()
-            # Print the users
-            for user in users:
-                print(user.name)
-                print(user.telephone)
-                print(user.email)
-                print(user.password)
             return redirect('/')
         return render_template('creat-article.html')
     else:
